@@ -1,0 +1,80 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the data from the CSV file (using forward slashes)
+data = pd.read_csv("D:/all xerox/titanic.csv")
+
+# ... rest of your code
+# Check for missing values
+print(data.isnull().sum())
+def load_data(filepath):
+  """
+  Loads data from a CSV file.
+
+  Args:
+      filepath (str): Path to the CSV file.
+
+  Returns:
+      pandas.DataFrame: The loaded DataFrame.
+  """
+  return pd.read_csv(filepath)
+
+# Example usage
+data = load_data("D:/all xerox/titanic.csv")
+print(data)
+
+# Analyze distribution of numerical features
+data.hist(figsize=(10, 10))
+plt.tight_layout()
+plt.show()
+# Analyze categorical features
+data.groupby("Sex")["Survived"].value_counts().plot(kind="bar")
+plt.title("Survival by Sex")
+plt.show()
+# Identify the column with strings (replace 'Name' if needed)
+string_column = data.select_dtypes(include=['object']).columns[0]
+
+# Option 1a: Drop rows with missing values
+# data.dropna(subset=[string_column], inplace=True)
+
+# Option 1b: Impute missing values (example: replace with mean of the column)
+# data[string_column] = data[string_column].fillna(data[string_column].mean())
+
+# Correlation analysis (after handling missing values)
+correlation = data.corr(numeric_only=True)
+sns.heatmap(correlation, annot=True)
+plt.title("Correlation Matrix")
+plt.show()
+data["FamilySize"] = data["SibSp"] + data["Parch"] + 1  # Adding 1 to include the passenger themselves
+data["Age_bin"] = pd.cut(data["Age"], bins=[0, 18, 65, 80], labels=["Child", "Adult", "Elderly"])
+sns.boxplot(
+    x = "Sex",
+    y = "Fare",
+    showmeans=True,
+    data=data
+)
+plt.title("Fare Distribution by Gender")
+plt.show()
+sns.scatterplot(
+    x = "Age",
+    y = "Fare",
+    data=data
+)
+plt.title("Relationship between Age and Fare")
+plt.show()
+def correlation_analysis(data):
+  """
+  Calculates and visualizes the correlation matrix for numerical features.
+
+  Args:
+      data (pandas.DataFrame): The DataFrame containing numerical features.
+  """
+  correlation = data.corr(numeric_only=True)
+  sns.heatmap(correlation, annot=True)
+  plt.title("Correlation Matrix")
+  plt.show()
+
+# Example usage (assuming data already has missing values dropped)
+correlation_analysis(data)
